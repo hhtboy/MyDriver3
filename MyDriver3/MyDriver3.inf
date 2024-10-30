@@ -1,0 +1,71 @@
+;
+; MyDriver3.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class="ActivityMonitor"
+ClassGuid={b86dff51-a31e-4bac-b3cf-e8cfe75c9fc2}
+Provider=%ManufacturerName%
+DriverVer=10/30/2024,1.0.0.0
+CatalogFile=MyDriver3.cat
+PnpLockdown=1
+
+; Windows OS version 1809 이상을 지원
+[DestinationDirs]
+DefaultDestDir = 12
+MiniFilter.DriverFiles  = 12            ; %windir%\system32\drivers
+
+[DefaultInstall]
+OptionDesc          = %ServiceDescription%
+CopyFiles           = MiniFilter.DriverFiles
+
+[DefaultInstall.Services]
+AddService          = %ServiceName%,,MiniFilter.Service
+
+[DefaultUninstall]
+DelFiles   = MiniFilter.DriverFiles
+
+[DefaultUninstall.Services]
+DelService = %ServiceName%,0x200  ; Ensure service is stopped before deleting
+
+[MiniFilter.Service]
+DisplayName      = %ServiceName%
+Description      = %ServiceDescription%
+ServiceBinary    = %12%\MyDriver3.sys        ; %windir%\system32\drivers\
+Dependencies     = "FltMgr"
+ServiceType      = 2                            ; SERVICE_FILE_SYSTEM_DRIVER
+StartType        = 3                            ; SERVICE_DEMAND_START
+ErrorControl     = 1                            ; SERVICE_ERROR_NORMAL
+LoadOrderGroup   = "FSFilter Activity Monitor"
+AddReg           = MiniFilter.AddRegistry
+
+[MiniFilter.AddRegistry]
+HKR,"Instances","DefaultInstance",0x00000000,%DefaultInstance%
+HKR,"Instances\"%Instance1.Name%,"Altitude",0x00000000,%Instance1.Altitude%
+HKR,"Instances\"%Instance1.Name%,"Flags",0x00010001,%Instance1.Flags%
+
+[MiniFilter.DriverFiles]
+MyDriver3.sys
+
+[SourceDisksFiles]
+MyDriver3.sys = 1,,
+
+[SourceDisksNames]
+1 = %DiskId1%,,,
+
+[Strings]
+ManufacturerName="Your Manufacturer Name" ; TODO: 제조사 이름을 입력하세요.
+DeviceName="MyDriver3 Device"
+DiskName="MyDriver3 Source Disk"
+DiskId1                 = "MyDriver3 Device Installation Disk"
+ServiceDescription      = "MyDriver3 was written by hhtboy"
+ServiceName             = "MyDriver3"
+DriverName              = "MyDriver3"
+
+
+;Instances specific information.
+DefaultInstance         = "MyDriver3"
+Instance1.Name          = "MyDriver3"
+Instance1.Altitude      = "370000"
+Instance1.Flags         = 0x0
